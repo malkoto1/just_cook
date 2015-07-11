@@ -28,12 +28,12 @@ class Recipe:
     def from_dict(cls, object_dict):
         return Recipe(object_dict['name'], object_dict['products'], object_dict['description'], object_dict['checked'], object_dict['_id'])
 
-    def __init__(self, name, products, description, checked=False, id=None):
+    def __init__(self, name, products, description, checked=False, idd=None):
         self.name = name
         self.products = products
         self.description = description
         self.checked = checked
-        self._id = id
+        self._id = idd
 
 
 class Cookie:

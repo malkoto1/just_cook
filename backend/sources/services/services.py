@@ -1,7 +1,7 @@
 __author__ = 'Vojda'
 
 from bottle import run, get, post, put, delete, response, request, server_names, ServerAdapter
-import sources.utils.db_utils as db_utils
+from sources.utils.db_utils import Databaser
 import sources.utils.utils as utils
 from bson.json_util import dumps, loads
 from sources.utils.skeleton import User, Recipe
@@ -10,6 +10,7 @@ import hashlib, time
 
 COOKIE_LIFE = 604800000
 
+db_utils = Databaser.get_db()
 
 # Declaration of new class that inherits from ServerAdapter
 # It's almost equal to the supported cherrypy class CherryPyServer
@@ -83,7 +84,7 @@ def hello():
 def login():
     body = loads(request._get_body_string().decode(utils.ENCODING))
     if db_utils.is_user_valid(body['username'], body['password']):
-        hash_object = hashlib.sha512(bytes(body['username'], 'utf-8'))
+        hash_object = hashlib.sha512(bytes(body['username'], utils.ENCODING))
         hex_dig = hash_object.hexdigest()
         expires = utils.get_current_time() + COOKIE_LIFE
         db_utils.add_cookie(hex_dig, expires, body['username'])
