@@ -2,6 +2,7 @@ __author__ = 'Vojda'
 
 from pymongo import MongoClient
 from sources.utils.skeleton import User, Recipe
+from sources.utils import utils
 
 
 def get_db(db='just_cook'):
@@ -116,13 +117,23 @@ def add_cookie(hash, expires, username):
 
 def get_cookie(hash):
     db = get_db()
-    cookie = db.cookies.find_one({'Hash': hash})
+    return db.cookies.find_one({'Hash': hash})
 
 
 def is_cookie_valid(hash):
     import time
     cookie = get_cookie(hash)
-    if cookie and cookie['Alive_Until'] > int(round(time.time() * 1000)):
+    if cookie and cookie['Alive_Until'] > utils.get_current_time():
         return True
     return False
+
+def remove_expired_cookies():
+    import time
+    db = get_db()
+    cookies = db.cookies.find()
+    delete_cookies = []
+    now = utils.get_current_time()
+    for cookie in cookies:
+        if now > cookie['Alive_Until']:
+            db.cookies.remove({'Hash':cookie['Hash']})
 

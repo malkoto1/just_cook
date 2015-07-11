@@ -81,11 +81,11 @@ def hello():
 
 @post('/login')
 def login():
-    body = loads(request._get_body_string().decode("utf-8"))
+    body = loads(request._get_body_string().decode(utils.ENCODING))
     if db_utils.is_user_valid(body['username'], body['password']):
         hash_object = hashlib.sha512(bytes(body['username'], 'utf-8'))
         hex_dig = hash_object.hexdigest()
-        expires = int(round(time.time() * 1000)) + COOKIE_LIFE
+        expires = utils.get_current_time() + COOKIE_LIFE
         db_utils.add_cookie(hex_dig, expires, body['username'])
         response.set_cookie('Hash', hex_dig)
         response.set_cookie('Alive_Until', str(expires))
@@ -103,14 +103,14 @@ def get_all_users():
 def add_user():
     if utils.is_admin(request.get_cookie('Hash')):
         response.content_type = 'application/json'
-        body = loads(request._get_body_string().decode("utf-8"))
+        body = loads(request._get_body_string().decode(utils.ENCODING))
         return dumps(db_utils.add_user(body['username'], body['password'], body['admin']))
     response.status = 401
 
 
 @put('/users')
 def edit_user():
-    body = loads(request._get_body_string().decode("utf-8"))
+    body = loads(request._get_body_string().decode(utils.ENCODING))
     hash = request.get_cookie('Hash')
     if utils.is_admin(hash) or body['username'] == db_utils.get_cookie(hash)['user']:
         db_utils.edit_user(User(body['username'], body['password'], body['admin']))
@@ -130,8 +130,8 @@ def get_recipes():
 @post('/recipes')
 def add_recipe():
     response.content_type = 'application/json'
-    body = loads(request._get_body_string().decode("utf-8"))
-    return dumps(db_utils.add_recipe(Recipe(body['name'],body['products'],body['description'])))
+    body = loads(request._get_body_string().decode(utils.ENCODING))
+    return dumps(db_utils.add_recipe(Recipe(body['name'], body['products'], body['description'])))
 
 
 @delete('/recipes')
