@@ -1,1 +1,1 @@
-# just_cook
+Just Cook is very nice application for exchanging recipes. For it is only backend. the idea is to be shipped, eventually, as an iOS and Android and Windows free application. It will have and an exclusive web page. But those will be implemented in the future.
